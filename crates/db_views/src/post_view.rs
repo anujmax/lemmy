@@ -479,7 +479,7 @@ fn queries<'a>() -> Queries<
     // then use the main sort
     query = match options.sort.unwrap_or(SortType::Hot) {
       SortType::Active => query.then_desc(key::hot_rank_active),
-      SortType::Hot => query.then_desc(key::hot_rank),
+      SortType::Hot | SortType::Name => query.then_desc(key::hot_rank),
       SortType::Scaled => query.then_desc(key::scaled_rank),
       SortType::Controversial => query.then_desc(key::controversy_rank),
       SortType::New => query.then_desc(key::published),

@@ -1,3 +1,5 @@
+import {ListCommunities} from "lemmy-js-client/dist/types/ListCommunities";
+
 jest.setTimeout(120000);
 
 import { CommunityView } from "lemmy-js-client/dist/types/CommunityView";
@@ -32,7 +34,7 @@ import {
   resolveBetaCommunity,
   longDelay,
   delay,
-  editCommunity,
+  editCommunity, listCommunity,
 } from "./shared";
 import { EditCommunity, EditSite } from "lemmy-js-client";
 
@@ -532,4 +534,26 @@ test("Content in local-only community doesnt federate", async () => {
   await expect(resolvePost(beta, postRes.post_view.post)).rejects.toStrictEqual(
     Error("couldnt_find_object"),
   );
+});
+
+test("Fetched community are sorted by name", async () => {
+  // let communityRes = await createCommunity(alpha);
+  // let communityRes1 = await createCommunity(alpha);
+  // let communityRes2 = await createCommunity(alpha);
+  // let communityRes3 = await createCommunity(alpha);
+  let unsortedCommunityList = await listCommunity(beta, {});
+  let unsortedCommunityListNames = unsortedCommunityList.communities.map(_ => _.community.name);
+  let params: ListCommunities = {
+    sort: "Name",
+    sort_order: "Asc"
+  };
+  let communityList = await listCommunity(beta, params);
+  let fetchedCommunityNames = communityList.communities.map(_ => _.community.name);
+
+  // let createdCommunityNames = [communityRes, communityRes1, communityRes2, communityRes3]
+  //     .map(_ => _.community_view.community.name)
+  //     .sort();
+  //Communities are sorted ascending by name
+
+  expect(fetchedCommunityNames).toStrictEqual(unsortedCommunityListNames.sort());
 });

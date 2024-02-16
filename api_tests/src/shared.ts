@@ -72,6 +72,8 @@ import { CommentReportResponse } from "lemmy-js-client/dist/types/CommentReportR
 import { CreateCommentReport } from "lemmy-js-client/dist/types/CreateCommentReport";
 import { ListCommentReportsResponse } from "lemmy-js-client/dist/types/ListCommentReportsResponse";
 import { ListCommentReports } from "lemmy-js-client/dist/types/ListCommentReports";
+import { ListCommunitiesResponse } from "lemmy-js-client/dist/types/ListCommunitiesResponse";
+import { ListCommunities } from "lemmy-js-client/dist/types/ListCommunities";
 import { GetPostsResponse } from "lemmy-js-client/dist/types/GetPostsResponse";
 import { GetPosts } from "lemmy-js-client/dist/types/GetPosts";
 import { GetPersonDetailsResponse } from "lemmy-js-client/dist/types/GetPersonDetailsResponse";
@@ -558,6 +560,13 @@ export async function getCommunityByName(
     name,
   };
   return api.getCommunity(form);
+}
+
+export async function listCommunity(
+    api: LemmyHttp,
+    form: ListCommunities,
+): Promise<ListCommunitiesResponse> {
+  return api.listCommunities(form);
 }
 
 export async function deleteCommunity(

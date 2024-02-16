@@ -28,6 +28,7 @@ pub async fn list_communities(
   let show_nsfw = data.show_nsfw.unwrap_or_default();
   let page = data.page;
   let limit = data.limit;
+  let sort_order = data.sort_order;
   let local_user = local_user_view.map(|l| l.local_user);
   let communities = CommunityQuery {
     listing_type,
@@ -36,6 +37,7 @@ pub async fn list_communities(
     local_user: local_user.as_ref(),
     page,
     limit,
+    sort_order,
     is_mod_or_admin: is_admin,
     ..Default::default()
   }

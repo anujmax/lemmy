@@ -406,7 +406,7 @@ pub fn naive_now() -> DateTime<Utc> {
 
 pub fn post_to_comment_sort_type(sort: SortType) -> CommentSortType {
   match sort {
-    SortType::Active | SortType::Hot | SortType::Scaled => CommentSortType::Hot,
+    SortType::Active | SortType::Hot | SortType::Scaled | SortType::Name => CommentSortType::Hot,
     SortType::New | SortType::NewComments | SortType::MostComments => CommentSortType::New,
     SortType::Old => CommentSortType::Old,
     SortType::Controversial => CommentSortType::Controversial,

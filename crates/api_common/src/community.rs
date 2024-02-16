@@ -3,6 +3,7 @@ use lemmy_db_schema::{
   source::site::Site,
   CommunityVisibility,
   ListingType,
+  SortOrder,
   SortType,
 };
 use lemmy_db_views_actor::structs::{CommunityModeratorView, CommunityView, PersonView};
@@ -78,6 +79,7 @@ pub struct ListCommunities {
   pub show_nsfw: Option<bool>,
   pub page: Option<i64>,
   pub limit: Option<i64>,
+  pub sort_order: Option<SortOrder>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

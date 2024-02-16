@@ -81,6 +81,18 @@ pub enum SortType {
   TopNineMonths,
   Controversial,
   Scaled,
+  Name,
+}
+
+#[derive(
+  EnumString, Display, Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, Default,
+)]
+#[cfg_attr(feature = "full", derive(TS))]
+#[cfg_attr(feature = "full", ts(export))]
+pub enum SortOrder {
+  #[default]
+  Desc,
+  Asc,
 }
 
 #[derive(EnumString, Display, Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, Hash)]

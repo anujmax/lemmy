@@ -24,6 +24,7 @@ use lemmy_db_schema::{
   utils::{fuzzy_search, limit_and_offset, DbConn, DbPool, ListFn, Queries, ReadFn},
   CommunityVisibility,
   ListingType,
+  SortOrder,
   SortType,
 };
 
@@ -97,6 +98,7 @@ fn queries<'a>() -> Queries<
   };
 
   let list = move |mut conn: DbConn<'a>, options: CommunityQuery<'a>| async move {
+    use SortOrder::*;
     use SortType::*;
 
     let my_person_id = options.local_user.map(|l| l.person_id);
@@ -124,23 +126,30 @@ fn queries<'a>() -> Queries<
       );
     }
 
-    match options.sort.unwrap_or(Hot) {
-      Hot | Active | Scaled => query = query.order_by(community_aggregates::hot_rank.desc()),
-      NewComments | TopDay | TopTwelveHour | TopSixHour | TopHour => {
+    match (
+      options.sort.unwrap_or(Hot),
+      options.sort_order.unwrap_or(Desc),
+    ) {
+      (Hot | Active | Scaled, _) => query = query.order_by(community_aggregates::hot_rank.desc()),
+      (NewComments | TopDay | TopTwelveHour | TopSixHour | TopHour, _) => {
         query = query.order_by(community_aggregates::users_active_day.desc())
       }
-      New => query = query.order_by(community::published.desc()),
-      Old => query = query.order_by(community::published.asc()),
+      (New, _) => query = query.order_by(community::published.desc()),
+      (Old, _) => query = query.order_by(community::published.asc()),
       // Controversial is temporary until a CommentSortType is created
-      MostComments | Controversial => query = query.order_by(community_aggregates::comments.desc()),
-      TopAll | TopYear | TopNineMonths => {
+      (MostComments | Controversial, _) => {
+        query = query.order_by(community_aggregates::comments.desc())
+      }
+      (TopAll | TopYear | TopNineMonths, _) => {
         query = query.order_by(community_aggregates::subscribers.desc())
       }
-      TopSixMonths | TopThreeMonths => {
+      (TopSixMonths | TopThreeMonths, _) => {
         query = query.order_by(community_aggregates::users_active_half_year.desc())
       }
-      TopMonth => query = query.order_by(community_aggregates::users_active_month.desc()),
-      TopWeek => query = query.order_by(community_aggregates::users_active_week.desc()),
+      (TopMonth, _) => query = query.order_by(community_aggregates::users_active_month.desc()),
+      (TopWeek, _) => query = query.order_by(community_aggregates::users_active_week.desc()),
+      (Name, Asc) => query = query.order_by(community::name.asc()),
+      (Name, Desc) => query = query.order_by(community::name.desc()),
     };
 
     if let Some(listing_type) = options.listing_type {
@@ -230,6 +239,7 @@ pub struct CommunityQuery<'a> {
   pub show_nsfw: bool,
   pub page: Option<i64>,
   pub limit: Option<i64>,
+  pub sort_order: Option<SortOrder>,
 }
 
 impl<'a> CommunityQuery<'a> {
